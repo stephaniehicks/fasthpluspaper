@@ -1,1 +1,1 @@
-# hpluspaper
+# fasthpluspaper
