@@ -5,18 +5,6 @@ library(viridis)
 library(leaflet)
 
 set.seed(1234)
-#n <- 1000
-#m <- 500
-#Nd <- (n*(n-1))/2
-#Nz <- (Nd*(Nd-1))/2
-#datasets
-#loop over 10 signal sizes and 10 balances
-#fix variance = 1
-#balance from 5:95, 10:90,.... 50:50
-#signal from 0,.05,...,.50
-#bals <- seq(0.05,0.5,by=0.05)
-#sigs <- seq(0.00,0.5,by=0.05)
-
 #set up parallel backend
 cl <- makeCluster(12)
 registerDoParallel(cl) #needs to be a socket [] on windows
@@ -43,9 +31,11 @@ calcs <- function(b){
     dw <- sort(dis[iw])
     db <- sort(dis[ib])
     sp <- sum(sapply(dw, function(x) sum(x>db)))
-    gp <- (2*sp)/Nz
+    #gp <- (2*sp)/Nz
+    gp <- sp / Nz
     hp <- sp / (as.numeric(length(dw))*as.numeric(length(db)))
-    c(gp,hp)
+    a <- as.numeric(length(iw)) / as.numeric(length(ind))
+    c(gp,hp,a)
   })
   return(res)
 }
@@ -86,10 +76,12 @@ xlabs <- sapply(bals, function(x) {
  return(c)
 })
 
+#xlabs2 <- 
+
 yvals <- sapply(1:nr, function(i) c(i-0.5,i+0.5))
 ylabs <- formatC(seq(0.00,0.5,by=0.05)*2,digits=1,format='f')
 
-pdf("C:/Users/Nathan/Documents/Hplus/signal_heatmap.pdf",width=10,height=8)
+pdf("signal_heatmap.pdf",width=10,height=8)
   plot.new()
   par(new = "TRUE",plt = plotlocs[1,],las = 1, cex.axis = 1)
   plot.new()
@@ -104,8 +96,10 @@ pdf("C:/Users/Nathan/Documents/Hplus/signal_heatmap.pdf",width=10,height=8)
   text(x=0.1,y=1:nr,labels=ylabs,cex=1.0,srt=0)
   mtext(side=3,text='G+',cex=1.2)
   par(xpd = TRUE)
-  text(x=-1.0,y=mean(yvals),labels=expression("E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
-  text(x=11,y=-0.6,labels=expression("Cl"[1] * ":Cl"[2]),cex=1.5)
+  #text(x=-1.0,y=mean(yvals),labels=expression("E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
+  text(x=-1.0,y=mean(yvals),labels= expression("Mean cluster difference: E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
+  #text(x=11,y=-0.6,labels=expression("Cl"[1] * ":Cl"[2]),cex=1.5)
+  text(x=11,y=-0.6,labels=expression(" Cl"[1] * ":Cl"[2]),cex=1.5)
   par(xpd=FALSE)
 
   par(new = "TRUE",plt = plotlocs[2,],las = 1, cex.axis = 1)
@@ -126,7 +120,7 @@ pdf("C:/Users/Nathan/Documents/Hplus/signal_heatmap.pdf",width=10,height=8)
   rect(xleft=levs[-length(levs)], ybottom=0.0, xright=levs[-1L], ytop=1.0, col=col_pal, border=NA)
   box()
   axis(side=1,labels=zleglabs,at=zleglocs,cex=0.7,las=1,mgp=c(1.0, .4, 0))
-  mtext(side=3,text='G+ / H+', cex=1.2)
+  mtext(side=3,text='G+ / H+', cex=1.3)
 
 dev.off()
 

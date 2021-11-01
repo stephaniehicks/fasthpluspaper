@@ -110,7 +110,7 @@ pdf('application_plot.pdf',width=6,height=6)
 
 
   par(new = "TRUE",plt = plotlocs[[4]],las = 1,cex.axis = 1)
-  hca <- cutree(hclust(dl2, method = "average"),k=3)
+  hca <- cutree(hclust(dl2, method = "ward.D"),k=3)
   l <- hca
   ind <- sapply(l, function(x) x==l)
   ind <- ind[upper.tri(ind)]
@@ -119,7 +119,7 @@ pdf('application_plot.pdf',width=6,height=6)
   hist(x=dis[iw],breaks=bins,main='',xlab='',ylab='',plot=T,border='blue',
     col=clw, freq=T,xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',ylim=ylims_hist)
   hist(x=dis[ib],breaks=bins,add=T,border='red',col=clb,freq=T,ylim=ylims_hist)
-  mtext(side=1,text='HC average',line=0.8,las=1)
+  mtext(side=1,text='HC ward',line=0.8,las=1)
   axis(side=1,at=xticks_hist,labels=c('min','max'),las=1,mgp=c(3, .2, 0),line=0.1,cex.axis=0.8)
   hp <- hpe(D=dl2,L=l,p=251)
   hpl <- formatC(hp$h,format='f',digits=4)

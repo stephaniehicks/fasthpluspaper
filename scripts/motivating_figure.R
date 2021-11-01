@@ -75,8 +75,9 @@ dat <- pblapply(dat, function(d) {
   dis <- dis[upper.tri(dis)]
   dw <- sort(dis[iw])
   db <- sort(dis[ib])
+  alf <- as.numeric(length(iw)) / as.numeric(length(ind))
 
-  fin <- list(p = pc, c = cols, w = dw, b = db)
+  fin <- list(p = pc, c = cols, w = dw, b = db, a=alf)
   return(fin)
 })
 
@@ -88,7 +89,8 @@ bins <- seq(binmin,binmax,length.out=20)
 #g+ and h+ values
 perfs <- pbsapply(dat, function(d) {
   sp <- sum(sapply(d$w, function(x) sum(x>d$b)))
-  gp <- (2*sp) / Nz
+  #gp <- (2*sp) / Nz
+  gp <- sp / Nz
   hp <- sp / (as.numeric(length(d$w))*as.numeric(length(d$b)))
   c(g=gp,h=hp)
 })
@@ -149,7 +151,7 @@ yticks_hist <- c(0,10^4,10^5,10^6)
 ytclbs_hist <- c('0',expression('10'^4),expression('10'^5),expression('10'^6))
 ylims_hist <- c(0,103500)
 
-pdf("C:/Users/Nathan/Documents/hpluspaper/figures/motivating_figure.pdf",width=10,height=5)
+pdf("motivating_figure.pdf",width=10,height=5)
   plot.new()
 
   #1st row (PCA plots)
