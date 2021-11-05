@@ -151,6 +151,8 @@ yticks_hist <- c(0,10^4,10^5,10^6)
 ytclbs_hist <- c('0',expression('10'^4),expression('10'^5),expression('10'^6))
 ylims_hist <- c(0,103500)
 
+alphloc <- c(37,8e4)
+
 pdf("motivating_figure.pdf",width=10,height=5)
   plot.new()
 
@@ -171,6 +173,8 @@ pdf("motivating_figure.pdf",width=10,height=5)
     mtext(side=1,text='Dist. (L2)',line=1.0,las=1)
     axis(side=1,at=xticks_hist,las=1,mgp=c(3, .2, 0),line=0.1,cex.axis=0.8)
     if(i==1){axis(side=2,at=yticks_hist,labels=ytclbs_hist,las=2,mgp=c(3, .5, 0),cex.axis=0.8)}
+    alphtxt <- formatC(dat[[i]]$a,digits=2,format='f')
+    text(x=alphloc[1],y=alphloc[2], labels=bquote(alpha == .(alphtxt)),cex=0.8)
   }
 
   #3rd row (h+ and g+ values)

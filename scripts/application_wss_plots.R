@@ -1,12 +1,3 @@
-#layout
-# % % %%
-# % % %%
-# %%%%%%
-# %%%%%%
-#top half: two 2x2s (MDS) next to a bigger 1x1 (scatter plot ARI vs H+)
-#bottom half: elbow plot (k=2:10), double y axis with left is ARI and right is H+
-
-
 #cellbench 5cl data
 #https://github.com/LuyiTian/sc_mixology/tree/master/data/csv/sc_10x.count.csv.gz
 #https://github.com/LuyiTian/sc_mixology/blob/master/data/csv/sc_10x.metadata.csv.gz
@@ -70,14 +61,16 @@ stats_k <- sapply(k_vec, function(k) {
   h <- 1 - hpe(D=dl2,L=p$clustering,alphas=F,p=101)$h
   s <- p$silinfo$avg.width
   #mean(silhouette(x=p$clustering,dist=dl2)[,3])
-  #w <- calc_wss(dl2,p$clustering)
+  w <- calc_wss(dl2,p$clustering)
   o <- min(p$objective)
-  c(h,s,o)
+  c(h,s,o,w)
 })
 
 l_bg <- mean(log(ws_bg)) #apply(ws_bg,1,function(x) mean(log(x)))
 
 stats_plot <- t(apply(stats_k,1, function(x) map_fxn(x,0,1,min(x),max(x))))
+
+col_hc <- c("#785EF0","#DC267F","#FE6100","#FFB000")
 
 cols_s <- c("#332288","#44AA99","#AA4499")
 ltys_s <- c(1,2,3)
@@ -112,7 +105,7 @@ pdf('application_plot_v4.pdf',width=8,height=8)
   par(new = "TRUE",plt = plotlocs[[1]],las = 1,cex.axis = 1)
   plot(x=md1[,1],y=md1[,2],pch=shp, col=hc_cols[[1]], bg=hc_fils[[1]],main='',xlab='',ylab='',
        xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',cex=0.7,xlim=xlim1,ylim=ylim1)
-  mtext(side=3,line=0.0,text=names(hc_test)[1])
+  mtext(side=3,line=0.0,text='Label 1')
   mtext(side=2,text='MDS 2',line=0.3,las=3)
 
   par(new = "TRUE",plt = plotlocs[[2]],las = 1,cex.axis = 1)
@@ -120,29 +113,31 @@ pdf('application_plot_v4.pdf',width=8,height=8)
        xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',cex=0.7,xlim=xlim1,ylim=ylim1)
   u <- which(hc_cols[[2]] == colref[3])
   points(md1[u,1],y=md1[u,2],pch=shp[u], col=hc_cols[[2]][u], bg=hc_fils[[2]][u])
-  mtext(side=3,line=0.0,text=names(hc_test)[2])
+  mtext(side=3,line=0.0,text='Label 2')
 
   par(new = "TRUE",plt = plotlocs[[3]],las = 1,cex.axis = 1)
   plot(x=md1[,1],y=md1[,2],pch=shp, col=hc_cols[[3]], bg=hc_fils[[3]],main='',xlab='',ylab='',
        xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',cex=0.7,xlim=xlim1,ylim=ylim1)
-  mtext(side=3,line=0.0,text=names(hc_test)[3])
+  mtext(side=3,line=0.0,text='Label 3')
   mtext(side=2,text='MDS 2',line=0.3,las=3)
   mtext(side=1,text='MDS 1',line=0.3,las=1)
 
   par(new = "TRUE",plt = plotlocs[[4]],las = 1,cex.axis = 1)
   plot(x=md1[,1],y=md1[,2],pch=shp, col=hc_cols[[4]], bg=hc_fils[[4]],main='',xlab='',ylab='',
        xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',cex=0.7,xlim=xlim1,ylim=ylim1)
-  mtext(side=3,line=0.0,text=names(hc_test)[4])
+  mtext(side=3,line=0.0,text='Label 4')
   mtext(side=1,text='MDS 1',line=0.3,las=1)
 
 
   par(new = "TRUE",plt = plotlocs[[5]],las = 1,cex.axis = 1)
-  plot(x=as,y=hs,pch=1,main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n', cex=1.5,xlim=xlim2,ylim=ylim2)
-  text(x=as,y=hs,labels=names(hc_test),pos=1)
+  plot(x=as,y=hs,pch=16,main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n', cex=1.5,xlim=xlim2,ylim=ylim2,col=col_hc)
+  text(x=as+.01,y=hs,labels=paste0("Label ",1:4),pos=1)
   mtext(side=2,text='H+',line=0.3,las=1)
   mtext(side=1,text='ARI',line=1.3,las=1)
   axis(side=1,labels=xlab2,at=xtck2,cex=1.0,las=1,mgp=c(3, .5, 0))
   axis(side=2,labels=ylab2,at=ytck2,cex=1.0,las=1,mgp=c(3, .5, 0))
+  mtext(side=3,line=0.0,text='H+ as an external validity measure')
+  legend('topright',bty='n',legend=names(hc_test), pt.cex=1.5, pch=16,cex = 1, col=col_hc)
 
   par(new = "TRUE",plt = plotlocs[[6]],las = 1,cex.axis = 1)
   plot(x=0,y=0,type='n',main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n', cex=1.5,xlim=xlim_s,ylim=ylim_s)
@@ -154,20 +149,23 @@ pdf('application_plot_v4.pdf',width=8,height=8)
     points(x=k_vec,y=stats_plot[i,],type='b',pch=16,col=cols_s[i],lty=ltys_s[i],lwd=1.5,cex=1.5)
   }
   legend('right',bty='n',legend=c("1-H+","Mean Sil."), pt.cex=1.5, pch=16, pt.lwd=1.5,cex = 1, col=cols_s,lty=ltys_s,lwd=1.5)
+  mtext(side=3,line=0.0,text='H+ as an internal validity measure')
 
 dev.off()
 
-ylim_s <- c(30,50)
-yticks_s <- c(30,40,50) #c(0.01,0.99) #c(0.00,0.20,0.40,0.60,0.80,1.0)
-ylabs_s <-  c('30','40','50') #formatC(yticks_s,format='f',digits=1)		      
+ylim_s <- c(340000,571000)
+yticks_s <- c(350000,450000,550000)
+ylabs_s <- sub("\\+0","",formatC(yticks_s,digits=1,format='E'))
+#c('350000','450000','550000')
 
 pdf('wss_plot.pdf',width=6,height=4)
   plot.new()
-  par(new = "TRUE",plt = c(0.1,0.95,0.15,0.95),las = 1,cex.axis = 1)
-  plot(x=0,y=0,type='n',main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n', cex=1.5,xlim=xlim_s,ylim=ylim_s)
+  par(new = "TRUE",plt = c(0.15,0.97,0.15,0.97),las = 1,cex.axis = 1)
+  plot(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=ltys_s[3],lwd=1.5,cex=1.5,
+    main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',xlim=xlim_s,ylim=ylim_s)
   axis(side=2,labels=ylabs_s,at=yticks_s,cex=1.0,las=2,mgp=c(3, .5, 0))
   mtext(side=1,text="k (number clusters)",cex=1.1,line=1.2,las=1)
-  mtext(side=2,text="Mean within-cluster distance to each medoid",line=1.5,las=3)
+  mtext(side=2,text="WSS (Within-cluster sum of squares)",line=3.0,las=3)
   axis(side=1,labels=xticks_s,at=xticks_s,cex=1.0,las=1,mgp=c(3, .5, 0))
-  points(x=k_vec,y=stats_k[3,],type='b',pch=16,col=cols_s[3],lty=ltys_s[3],lwd=1.5,cex=1.5)
+#  points(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=ltys_s[3],lwd=1.5,cex=1.5)
 dev.off()
