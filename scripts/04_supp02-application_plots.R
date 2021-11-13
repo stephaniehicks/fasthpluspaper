@@ -99,7 +99,7 @@ plotlocs <- list(
   c(0.06,0.96,0.06,0.46)  # 3:4,1:4
 )
 
-pdf('application_plot_v4.pdf',width=8,height=8)
+pdf('04-application_plot.pdf',width=8,height=8)
   plot.new()
 
   par(new = "TRUE",plt = plotlocs[[1]],las = 1,cex.axis = 1)
@@ -107,6 +107,7 @@ pdf('application_plot_v4.pdf',width=8,height=8)
        xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',cex=0.7,xlim=xlim1,ylim=ylim1)
   mtext(side=3,line=0.0,text='Label 1')
   mtext(side=2,text='MDS 2',line=0.3,las=3)
+  mtext(side=3,text='A',line=0.0,at=min(md1[,1]),cex=1.3)
 
   par(new = "TRUE",plt = plotlocs[[2]],las = 1,cex.axis = 1)
   plot(x=md1[,1],y=md1[,2],pch=shp, col=hc_cols[[2]], bg=hc_fils[[2]],main='',xlab='',ylab='',
@@ -114,6 +115,7 @@ pdf('application_plot_v4.pdf',width=8,height=8)
   u <- which(hc_cols[[2]] == colref[3])
   points(md1[u,1],y=md1[u,2],pch=shp[u], col=hc_cols[[2]][u], bg=hc_fils[[2]][u])
   mtext(side=3,line=0.0,text='Label 2')
+  mtext(side=3,text='B',line=0.0,at=min(md1[,1]),cex=1.3)
 
   par(new = "TRUE",plt = plotlocs[[3]],las = 1,cex.axis = 1)
   plot(x=md1[,1],y=md1[,2],pch=shp, col=hc_cols[[3]], bg=hc_fils[[3]],main='',xlab='',ylab='',
@@ -121,13 +123,14 @@ pdf('application_plot_v4.pdf',width=8,height=8)
   mtext(side=3,line=0.0,text='Label 3')
   mtext(side=2,text='MDS 2',line=0.3,las=3)
   mtext(side=1,text='MDS 1',line=0.3,las=1)
+  mtext(side=3,text='C',line=0.0,at=min(md1[,1]),cex=1.3)
 
   par(new = "TRUE",plt = plotlocs[[4]],las = 1,cex.axis = 1)
   plot(x=md1[,1],y=md1[,2],pch=shp, col=hc_cols[[4]], bg=hc_fils[[4]],main='',xlab='',ylab='',
        xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',cex=0.7,xlim=xlim1,ylim=ylim1)
   mtext(side=3,line=0.0,text='Label 4')
   mtext(side=1,text='MDS 1',line=0.3,las=1)
-
+  mtext(side=3,text='D',line=0.0,at=min(md1[,1]),cex=1.3)
 
   par(new = "TRUE",plt = plotlocs[[5]],las = 1,cex.axis = 1)
   plot(x=as,y=hs,pch=16,main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n', cex=1.5,xlim=xlim2,ylim=ylim2,col=col_hc)
@@ -136,8 +139,9 @@ pdf('application_plot_v4.pdf',width=8,height=8)
   mtext(side=1,text='ARI',line=1.3,las=1)
   axis(side=1,labels=xlab2,at=xtck2,cex=1.0,las=1,mgp=c(3, .5, 0))
   axis(side=2,labels=ylab2,at=ytck2,cex=1.0,las=1,mgp=c(3, .5, 0))
-  mtext(side=3,line=0.0,text='H+ as an external validity measure')
+  mtext(side=3,line=0.0,text='H+ vs external fitness measure')
   legend('topright',bty='n',legend=names(hc_test), pt.cex=1.5, pch=16,cex = 1, col=col_hc)
+  mtext(side=3,text='E',line=0.0,at=-0.1,cex=1.3)
 
   par(new = "TRUE",plt = plotlocs[[6]],las = 1,cex.axis = 1)
   plot(x=0,y=0,type='n',main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n', cex=1.5,xlim=xlim_s,ylim=ylim_s)
@@ -149,7 +153,8 @@ pdf('application_plot_v4.pdf',width=8,height=8)
     points(x=k_vec,y=stats_plot[i,],type='b',pch=16,col=cols_s[i],lty=ltys_s[i],lwd=1.5,cex=1.5)
   }
   legend('right',bty='n',legend=c("1-H+","Mean Sil."), pt.cex=1.5, pch=16, pt.lwd=1.5,cex = 1, col=cols_s,lty=ltys_s,lwd=1.5)
-  mtext(side=3,line=0.0,text='H+ as an internal validity measure')
+  mtext(side=3,line=0.0,text='H+ as an internal fitness measure')
+  mtext(side=3,text='F',line=0.0,at=1.9,cex=1.3)
 
 dev.off()
 
@@ -158,10 +163,10 @@ yticks_s <- c(350000,450000,550000)
 ylabs_s <- sub("\\+0","",formatC(yticks_s,digits=1,format='E'))
 #c('350000','450000','550000')
 
-pdf('wss_plot.pdf',width=6,height=4)
+pdf('supp02-wss_plot.pdf',width=6,height=4)
   plot.new()
   par(new = "TRUE",plt = c(0.15,0.97,0.15,0.97),las = 1,cex.axis = 1)
-  plot(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=ltys_s[3],lwd=1.5,cex=1.5,
+  plot(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=2,lwd=2.0,cex=1.3,
     main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',xlim=xlim_s,ylim=ylim_s)
   axis(side=2,labels=ylabs_s,at=yticks_s,cex=1.0,las=2,mgp=c(3, .5, 0))
   mtext(side=1,text="k (number clusters)",cex=1.1,line=1.2,las=1)

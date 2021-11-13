@@ -153,7 +153,7 @@ ylims_hist <- c(0,103500)
 
 alphloc <- c(37,8e4)
 
-pdf("motivating_figure.pdf",width=10,height=5)
+pdf("01-motivating_figure.pdf",width=10,height=5)
   plot.new()
 
   #1st row (PCA plots)
@@ -162,6 +162,16 @@ pdf("motivating_figure.pdf",width=10,height=5)
     plot(x=dat[[i]]$p[,1],y=dat[[i]]$p[,2],pch=16,col=dat[[i]]$c,cex=0.7,xaxs = "i",yaxs = "i",xlab='',ylab='',xaxt='n',yaxt='n')
     if(i==1){mtext(side=2,text='PC2',line=1.5,las=3) }
     mtext(side=1,text='PC1',line=0.5,las=1)
+    mtext(text=LETTERS[i],side=3,at=min(dat[[i]]$p[,1]),cex=1.5)
+    if(i == 2){
+      par(xpd=T)
+      abline(v=1.15*max(dat[[i]]$p[,1]),lty=2,col='grey60',lwd=2)
+      par(xpd=F)
+    }else if(i ==4){
+      par(xpd=T)
+      abline(v=1.10*max(dat[[i]]$p[,1]),lty=2,col='grey60',lwd=2)
+      par(xpd=F)      
+    }
   }
 
   #2nd row (distance histograms)
@@ -171,6 +181,7 @@ pdf("motivating_figure.pdf",width=10,height=5)
     hist(x=dat[[i]]$b,breaks=bins,add=T,border='red',col=clb,freq=T,ylim=ylims_hist)
     if(i==1){mtext(side=2,text='Frequency',line=1.5,las=3)}
     mtext(side=1,text='Dist. (L2)',line=1.0,las=1)
+    #mtext(text=letters[l+i],side=3,at=bins[1],cex=1.5,line=0.5)
     axis(side=1,at=xticks_hist,las=1,mgp=c(3, .2, 0),line=0.1,cex.axis=0.8)
     if(i==1){axis(side=2,at=yticks_hist,labels=ytclbs_hist,las=2,mgp=c(3, .5, 0),cex.axis=0.8)}
     alphtxt <- formatC(dat[[i]]$a,digits=2,format='f')

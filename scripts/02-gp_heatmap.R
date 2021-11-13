@@ -81,7 +81,7 @@ xlabs <- sapply(bals, function(x) {
 yvals <- sapply(1:nr, function(i) c(i-0.5,i+0.5))
 ylabs <- formatC(seq(0.00,0.5,by=0.05)*2,digits=1,format='f')
 
-pdf("signal_heatmap.pdf",width=10,height=8)
+pdf("02-signal_heatmap.pdf",width=10,height=8)
   plot.new()
   par(new = "TRUE",plt = plotlocs[1,],las = 1, cex.axis = 1)
   plot.new()
