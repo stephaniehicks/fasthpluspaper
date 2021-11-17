@@ -8,13 +8,16 @@ syvl <- sapply(sort(a), function(x) sum(x>b)/length(b))
 sxvl <- seq(0,1,length.out=length(syvl))
 
 pltlocs <- list(
-  c(0.07,0.37,0.20,0.95),
-  c(0.38,0.68,0.20,0.95),
-  c(0.69,0.99,0.20,0.95)
+  c(0.07,0.37,0.16,0.91),
+  c(0.38,0.68,0.16,0.91),
+  c(0.69,0.99,0.16,0.91)
 )
 pvec <- c(11,26,51)
 lwds <- c(2.0,1.0,0.5)
 lwds2 <- c(6,5,4)
+
+axloc <- c(0.01,0.50,0.98)
+#axtxt <- c('0','','p-1')
 
 pdf('03-gridplot.pdf',width=8,height=3)
 plot.new()
@@ -49,10 +52,14 @@ for(k in 1:3) {
   par(new = "TRUE",plt = pltlocs[[k]],las = 1, cex.axis = 1)
   plot.new()
   plot.window(xlim=c(-0.01,1.01),ylim=c(-0.01,1.01),ylab='',xlab='',xaxt='n',yaxt='n',xaxs = "i",yaxs = "i",bty='n')
-  axis(side=1,at=seq(0,1,by=0.2),las=1,mgp=c(0, .3, 0),line=0.0,cex.axis=0.7,labels=c('0','0.2','0.4','0.6','0.8','1'))
+  #axis(side=1,at=seq(0,1,by=0.2),las=1,mgp=c(0, .3, 0),line=0.0,cex.axis=0.7,labels=c('0','0.2','0.4','0.6','0.8','1'))
+  #axis(side=1,at=axloc,las=1,mgp=c(0, .3, 0),line=0.0,cex.axis=0.7,labels=c('0','i','p-1'))
+  mtext(side=1,text=c('0','i','p'),at=axloc,cex=0.8)
   mtext(side=1,text='q(A)',line=1.2,las=1,cex=1.2)
   if(k==1){
-    axis(side=2,at=seq(0,1,by=0.20),las=1,mgp=c(0, .5, 0),line=0.0,cex.axis=0.7,c('0','0.2','0.4','0.6','0.8','1'))
+    #axis(side=2,at=seq(0,1,by=0.20),las=1,mgp=c(0, .5, 0),line=0.0,cex.axis=0.7,c('0','0.2','0.4','0.6','0.8','1'))
+    #axis(side=2,at=axloc,las=1,mgp=c(0, .5, 0),line=0.0,cex.axis=0.7,labels=c('0','j','p-1'))
+    mtext(side=2,text=c('0','j','p'),at=axloc,cex=0.8,las=1,line=0.1)
     mtext(side=2,text='q(B)',line=1.5,las=3,cex=1.2)
   }
 
@@ -70,7 +77,7 @@ for(k in 1:3) {
   }  
 
   lines(x=sxvl,y=syvl,type='l',lwd=1.5,col='white')  
-
+  mtext(text=LETTERS[k],side=3,line=0.0,at=0,cex=1.5)
 }	
 	
 dev.off()

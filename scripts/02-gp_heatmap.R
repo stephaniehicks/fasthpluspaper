@@ -52,9 +52,9 @@ nr <- nrow(gres)
 nc <- ncol(gres)
 
 plotlocs <- rbind(
-  c(0.05,0.53,0.05,0.82), #left heatmap
-  c(0.51,0.99,0.05,0.82), #right heatmap
-  c(0.3,0.7,0.9,0.97) #top colorbar
+  c(0.05,0.53,0.03,0.79), #left heatmap
+  c(0.51,0.99,0.03,0.79), #right heatmap
+  c(0.3,0.7,0.87,0.95) #top colorbar
 )
 
 zlim <- c(0,max(rbind(gres,hres)))
@@ -94,12 +94,14 @@ pdf("02-signal_heatmap.pdf",width=10,height=8)
   }
   text(x=1:nc,y=c(0,0.3),labels=xlabs,cex=0.8)
   text(x=0.1,y=1:nr,labels=ylabs,cex=1.0,srt=0)
-  mtext(side=3,text='G+',cex=1.2)
+  mtext(side=3,text='G+',cex=1.3)
+  mtext(side=3,text='A',cex=1.1,at=0.5)
   par(xpd = TRUE)
   #text(x=-1.0,y=mean(yvals),labels=expression("E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
-  text(x=-1.0,y=mean(yvals),labels= expression("Mean cluster difference: E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
+  text(x=-1.0,y=mean(yvals),labels= expression("theoretical mean difference (" * Delta * ")"),srt=90,cex=1.3)
+  #expression("Mean cluster difference: E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
   #text(x=11,y=-0.6,labels=expression("Cl"[1] * ":Cl"[2]),cex=1.5)
-  text(x=11,y=-0.6,labels=expression(" Cl"[1] * ":Cl"[2]),cex=1.5)
+  text(x=11,y=-0.5,labels='class balance (b:1-b)',cex=1.3) #expression(" Cl"[1] * ":Cl"[2]),cex=1.5)
   par(xpd=FALSE)
 
   par(new = "TRUE",plt = plotlocs[2,],las = 1, cex.axis = 1)
@@ -112,7 +114,8 @@ pdf("02-signal_heatmap.pdf",width=10,height=8)
     }
   }
   text(x=1:nc,y=c(0,0.3),labels=xlabs,cex=0.8)
-  mtext(side=3,text='H+',cex=1.2)
+  mtext(side=3,text='H+',cex=1.3)
+  mtext(side=3,text='B',cex=1.1,at=0.5)
 
   par(new = "TRUE",plt = plotlocs[3,],las = 1,cex.axis = 1)
   plot.new()
@@ -120,7 +123,7 @@ pdf("02-signal_heatmap.pdf",width=10,height=8)
   rect(xleft=levs[-length(levs)], ybottom=0.0, xright=levs[-1L], ytop=1.0, col=col_pal, border=NA)
   box()
   axis(side=1,labels=zleglabs,at=zleglocs,cex=0.7,las=1,mgp=c(1.0, .4, 0))
-  mtext(side=3,text='G+ / H+', cex=1.3)
+  mtext(side=3,text='G+ and H+ values', cex=1.3)
 
 dev.off()
 

@@ -201,7 +201,7 @@ pdf("01-motivating_figure.pdf",width=10,height=5)
   plot(x=0,y=0,type='n',ylim=c(0,1),xlim=c(0,1),xaxs = "i",yaxs = "i",xlab='',ylab='',xaxt='n',yaxt='n',bty='n') 
   #legend(x=0.0,y=0.5,legend=c('cl1','cl2'), pch=16, col = c(cl1,cl2),bty='n',horiz=F)
   points(x=c(0.15,0.15),y=c(0.4,0.6),pch=c(16,16),col=c(cl1,cl2),cex=1.5)
-  text(x=c(0.35,0.35),y=c(0.6,0.4),labels=c(expression('Cl'[1]), expression('Cl'[2])),cex=1.2)
+  text(x=c(0.35,0.35),y=c(0.6,0.4),labels=c("X","Y"),cex=1.2)#labels=c(expression('Cl'[1]), expression('Cl'[2])),cex=1.2)
 
   par(new = "TRUE",plt = plotlocs[(3*l)+2,],las = 1,cex.axis = 1) 
   plot(x=0,y=0,type='n',ylim=c(0,1),xlim=c(0,1),xaxs = "i",yaxs = "i",xlab='',ylab='',xaxt='n',yaxt='n',bty='n')
