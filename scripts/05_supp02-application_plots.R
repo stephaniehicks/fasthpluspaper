@@ -99,7 +99,7 @@ plotlocs <- list(
   c(0.06,0.96,0.06,0.46)  # 3:4,1:4
 )
 
-pdf('04-application_plot.pdf',width=8,height=8)
+pdf('05-application_plot.pdf',width=8,height=8)
   plot.new()
 
   par(new = "TRUE",plt = plotlocs[[1]],las = 1,cex.axis = 1)
