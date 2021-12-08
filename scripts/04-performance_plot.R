@@ -84,7 +84,7 @@ pdf("04-performance_plot.pdf",width=6,height=4)
   mtext(side=1,text='number of observations',line=1.5,las=1,cex=1.3)
   axis(side=1,labels=xaxt,at=xaxl,cex.axis=0.5,las=1,mgp=c(1.0, .1, 0))
   axis(side=2,labels=yaxt,at=yaxl,cex.axis=0.7,las=3,mgp=c(3.0, .4, 0))
-  legend(x='topright',legend=c('Dissimilarity','Adjacency','S+ (Dw-Db comparisons)','HPE (pre-calculated D)','HPB (r=30,s=100)'),
+  legend(x='topright',legend=c('Dissimilarity','Adjacency','s (Dw-Db comparisons)','HPE (pre-calculated D)','HPB (r=30,s=100)'),
     lty=1:5,pch=pchref,col=colref,lwd=2.0,bty='n')
 
 dev.off()
