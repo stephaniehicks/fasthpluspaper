@@ -9,10 +9,10 @@ library(fasthplus)
 colref <- palette.colors(palette = "Okabe-Ito")[2:8]
 
 set.seed(1234)
-#q, number of boostraps
-#r, per-bootstrap sample size
-q_vec <- c(1,3,5,10,20,30)
-r_vec <- seq(10,100,by=10) #c(10,2,50,100)
+#r, replicates / number of boostraps
+#t, per-bootstrap sample size
+r_vec <- c(1,3,5,10,20,30)
+t_vec <- seq(10,100,by=10) #c(10,2,50,100)
 
 #full H+ calculation
 n <- 1000
@@ -25,24 +25,24 @@ setups <-  list(
 )
 
 
-calcf <- function(d,l,r){
-  #is this a general solution to sampling from classes in a balanced way?
-  stmp <- table(l)/length(l)
-  stmp <- as.vector(sapply(names(stmp), function(x) sample(which(l==x),round(r/length(stmp)))))
+#calcf <- function(d,l,r){
+#  #is this a general solution to sampling from classes in a balanced way?
+#  stmp <- table(l)/length(l)
+#  stmp <- as.vector(sapply(names(stmp), function(x) sample(which(l==x),round(r/length(stmp)))))
   #
-  labtmp <- l[stmp]
-  distmp <- as.matrix(dist(d[stmp,]))
-  distmp <- distmp[upper.tri(distmp)]
-  indtmp <- sapply(labtmp, function(x) x==labtmp)
-  indtmp <- indtmp[upper.tri(indtmp)]
-  iwtmp <- which(indtmp)
-  ibtmp <- which(!indtmp)
-  dwtmp <- distmp[iwtmp]
-  dbtmp <- distmp[ibtmp]
-  sptmp <- sum(sapply(dwtmp, function(x) sum(x>dbtmp)))
-  hptmp <- sptmp / (as.numeric(length(dwtmp))*as.numeric(length(dbtmp)))
-  return(hptmp) 
-}
+#  labtmp <- l[stmp]
+#  distmp <- as.matrix(dist(d[stmp,]))
+#  distmp <- distmp[upper.tri(distmp)]
+#  indtmp <- sapply(labtmp, function(x) x==labtmp)
+#  indtmp <- indtmp[upper.tri(indtmp)]
+#  iwtmp <- which(indtmp)
+#  ibtmp <- which(!indtmp)
+#  dwtmp <- distmp[iwtmp]
+#  dbtmp <- distmp[ibtmp]
+#  sptmp <- sum(sapply(dwtmp, function(x) sum(x>dbtmp)))
+#  hptmp <- sptmp / (as.numeric(length(dwtmp))*as.numeric(length(dbtmp)))
+#  return(hptmp) 
+#}
 
 dat <- lapply(setups, function(x) {
   len <- 1:length(x$b)
@@ -53,9 +53,10 @@ dat <- lapply(setups, function(x) {
   pc <- prcomp(z)$x[,1:2]
   dis <- dist(z)
   hp <- hpe(D=dis,L=lab,p=10001)$h
-  hpb <- sapply(r_vec, function(r) {
-    sapply(q_vec, function(q) {
-      mean(replicate(q,calcf(z,lab,r),T))
+  hpb <- sapply(t_vec, function(t) {
+    sapply(r_vec, function(r) {
+      hpb(D=z,L=lab,r=r,t=t)
+      #mean(replicate(q,calcf(z,lab,r),T))
     })
   })
   fin <- list(p=pc, h=hp, hb=hpb, res=t(abs(hp-hpb)), c=col,b=x$b)
@@ -112,7 +113,7 @@ pdf("supp03-bootstrap_accuracy.pdf",width=8,height=10)
   text(x=0.2,y=1:nr,labels=ylabs,cex=1.0,srt=0)
   mtext(side=3,text='C',cex=1.3,at=0.5)
   par(xpd = TRUE)
-  text(x=-0.2,y=mean(yvals),labels= "per-bootstrap sample size (s)",srt=90,cex=1.3)
+  text(x=-0.2,y=mean(yvals),labels= "per-bootstrap sample size (t)",srt=90,cex=1.3)
   text(x=7,y=-0.2,labels='number of bootstraps (r)',cex=1.3)
   par(xpd=FALSE)
 
