@@ -1,46 +1,26 @@
-#heatmaps for 2 difficulties. include PCA plots to demonstrate the 
+#performance plots for different calculations in H+ and its estimation
 set.seed(1234)
 library(RColorBrewer)
 library(fasthplus)
-#cl1 <- '#8338EC' #Purple
-#cl2 <- '#06D6A0' #Teal
 
 set.seed(1234)
-n_vec <- c(500,seq(1000,10000,by=1000))
+n_vec <- c(100,500,1000,3000)#seq(1000,5000,by=1000))
 m <- 500
 
-calcf <- function(d,l,r){
-  stmp <- table(l)/length(l)
-  stmp <- as.vector(sapply(names(stmp), function(x) sample(which(l==x),round(r/length(stmp)))))
-  labtmp <- l[stmp]
-  distmp <- as.matrix(dist(d[stmp,]))
-  distmp <- distmp[upper.tri(distmp)]
-  indtmp <- sapply(labtmp, function(x) x==labtmp)
-  indtmp <- indtmp[upper.tri(indtmp)]
-  iwtmp <- which(indtmp)
-  ibtmp <- which(!indtmp)
-  dwtmp <- distmp[iwtmp]
-  dbtmp <- distmp[ibtmp]
-  sptmp <- sum(sapply(dwtmp, function(x) sum(x>dbtmp)))
-  hptmp <- sptmp / (as.numeric(length(dwtmp))*as.numeric(length(dbtmp)))
- return(hptmp) 
-}
-
-
 res <- sapply(n_vec, function(n) {
+  print(n)
   dat <- t(sapply(1:n, function(i) rnorm(n=m,mean=0,sd=1)))
   lab <- c(rep(0,n/2),rep(1,n/2))
   #time distance calculation
   ptm <- proc.time()
   dis <- dist(dat)
+  #dis <- as.matrix(dis)
+  #dis <- dis[upper.tri(dis)]
   t_dis <- unname(proc.time() - ptm)[3]
   #time hpe calculation
   ptm <- proc.time()
-  hpe <- hpe(D=dis,L=lab,p=251)
+  hpe <- hpe(D=dis,L=lab,p=1001,alg='grid_search')
   t_hpe <- unname(proc.time() - ptm)[3]
-  #extra dis calcs (untimed)
-  dis <- as.matrix(dis)
-  dis <- dis[upper.tri(dis)]
   #time adjacency calculation
   ptm <- proc.time()
   ind <- sapply(lab, function(x) x==lab)
@@ -48,44 +28,139 @@ res <- sapply(n_vec, function(n) {
   iw <- which(ind)
   ib <- which(!ind)
   t_adj <- unname(proc.time() - ptm)[3]
+  #additional distance formatting
+  ptm <- proc.time()
+  dis <- as.matrix(dis)
+  dis <- dis[upper.tri(dis)]
+  t_di2 <- unname(proc.time() - ptm)[3]
+  t_dis <- t_dis + t_di2 
   #time s+ calculation
-  if(n < 2000){
-    ptm <- proc.time()
-    sp <- sum(sapply(dis[iw], function(x) sum(x>dis[ib])))
-    t_spl <- unname(proc.time() - ptm)[3]
+  if(n < 1000){
+  ptm <- proc.time()
+  sp <- sum(sapply(dis[iw], function(x) sum(x>dis[ib])))
+  t_sum <- unname(proc.time() - ptm)[3]
   } else {
-    t_spl <- NA
+    t_sum <- NA
   }
   #time hpb calculation (fixed n+r)
   ptm <- proc.time()
-  hpb <- mean(replicate(30,calcf(dat,lab,100),T)) 
+  #hpb <- mean(replicate(30,calcf(dat,lab,100),T))
+  h <- hpb(D=dat,L=lab,t=.05*n,r=30)
   t_hpb <- unname(proc.time() - ptm)[3]
-  c(t_dis,t_adj,t_spl,t_hpe,t_hpb)
+  c(t_dis,t_adj,t_sum,t_hpe,t_hpb)
 })
 
-colref <- c('#000000','#E69F00','#009E73','#0072B2','#CC79A7') #palette.colors(palette = "Okabe-Ito")[2:6]
-pchref <- 21:25
+rownames(res) <- c("dis","adj","sum","hpe","hpb")
 
-ylim <- c(-50,1.05*max(res,na.rm=T))
+colref <- c(
+  "dis"="#648FFF",
+  "adj"="#FFB000",
+  "sum"="#DC267F",
+  "hpe"="#FE6100",
+  "hpb"="#785EF0"
+)
+filref <- paste0(colref, '51')
+names(filref) <- names(colref)
+titref <- c(
+  "dis"="Dissimilarity",
+  "adj"="Adjacency",
+  "sum"="s (Dw-Db comparisons)",
+  "hpe"="hpe (pre-calculated D)",
+  "hpb"="hpb (all components)"
+)
+
+ylim <- c(-1,1.05*max(res,na.rm=T))
 yaxl <- pretty(c(0,max(res,na.rm=T)),n=3)
 yaxt <- formatC(yaxl,digits=0,format='f')
 
-xlim <- c(0,10500)
+ym2 <- max(res[-which(rownames(res)=='sum'),])*1.05 #mean(c(max(res[-which(rownames(res)=='sum'),]),ylim[2]))
+yl2m <- c(-1,ym2)
+ya2l <- pretty(c(0,ym2),n=3)
+ya2t <- formatC(ya2l, digits=0,format='f')
+
+con <- ya2l[3]
+c2n <- (con/ym2)*ylim[2]
+
+xlim <- c(0.99*min(n_vec),1.05*max(n_vec))
 xaxl <- n_vec
 xaxt <- as.character(n_vec)
 
-pdf("04-performance_plot.pdf",width=6,height=4)
-  par(mfrow=c(1,1),mar=c(3.1,3.1,0.6,0.6))
+plotlocs <- list(
+  c(0.06,0.36,0.16,0.91),
+  c(0.38,0.68,0.16,0.91),
+  c(0.70,1.00,0.16,0.91)
+)
+
+#just fill the rest with pink for s in brute force H+
+#res[is.na(res)] <- ylim[2]
+#make sure the max is right for 2nd/3rd plots
+#add tickmark to the right side of first plot to connect re-scaling
+
+pdf("04-performance_plot.pdf",width=8,height=3)
+  plot.new()
+
+  use <- c('sum','dis','adj')
+  par(new = "TRUE",plt = plotlocs[[1]],las = 1,cex.axis = 1, bty = 'n')
   plot(x=1,y=1,type='n',xaxs = "i",yaxs = "i",xlab='',ylab='',xaxt='n',yaxt='n',xlim=xlim,ylim=ylim)
-  for(i in 1:nrow(res)){
-    lines(x=n_vec,y=res[i,],col=colref[i],lwd=2.0,type='b',pch=pchref[i],cex=1.5,lty=i)
+  #awkward but we want the lines to come after the shading, sometimes beauty is pain
+  for(u in use){
+    if(!any(is.na(res[u,]))){
+      polygon(x=c(min(n_vec),n_vec,max(n_vec)), y=c(0,res[u,],0), border=NA, col=filref[u])
+    }else{
+      tx <- !is.na(res[u,])
+      polygon(x=c(min(n_vec),n_vec[tx],max(n_vec[tx])),  y=c(0,res[u,tx],0), border=NA, col=filref[u])
+      polygon(x=c(rep(max(n_vec[tx]),2),n_vec[!tx],max(n_vec)),y=c(0,rep(ylim[2],length(which(!tx))+1),0),border=NA,col=filref[u])
+    }
   }
-  mtext(side=2,text='computation time (sec.)',line=1.5,las=3,cex=1.3)
-  mtext(side=1,text='number of observations',line=1.5,las=1,cex=1.3)
+  for(u in use){
+    lines(x=n_vec, y=res[u,],type='l',lty=2,col='black',lwd=0.8)
+  }
+  mtext(side=2,text='computation time (sec.)',line=1.0,las=3,cex=1.2)
+  mtext(side=1,text='number of observations',line=1.3,las=1,cex=1.2)
   axis(side=1,labels=xaxt,at=xaxl,cex.axis=0.5,las=1,mgp=c(1.0, .1, 0))
-  axis(side=2,labels=yaxt,at=yaxl,cex.axis=0.7,las=3,mgp=c(3.0, .4, 0))
-  legend(x='topright',legend=c('Dissimilarity','Adjacency','s (Dw-Db comparisons)','HPE (pre-calculated D)','HPB (r=30,s=100)'),
-    lty=1:5,pch=pchref,col=colref,lwd=2.0,bty='n')
+  axis(side=2,labels=yaxt,at=yaxl,cex.axis=0.5,las=3,mgp=c(3.0, .3, 0))
+  mtext(text="A",side=3,line=0.0,at=0.2*n_vec[1],cex=1.5)
+  mtext(text="H+ (full)", side=3, line=0.0,cex=1.2)
+  legend(x='top',legend=titref[use],pch=15,col=filref[use],cex=0.7,bg='white') 
+  #axis(side=4,at=con,cex.axis=0.5,tick = TRUE, labels = FALSE,cex.axis=0.5,las=3,mgp=c(3.0, .3, 0))
+
+  #draw two lines to connect axes between 1st and 2nd/3rd plots
+  par(xpd=T)
+  segments(x0=max(n_vec),y0=con,x1=mean(c(rep(xlim[2],3),max(n_vec))),y1=c2n,lty=1,col='black',lwd=1)
+  #axis(side=4,at=con,cex.axis=0.5,tick = TRUE, labels = FALSE,cex.axis=0.5,las=3,mgp=c(3.0, .3, 0))
+  par(xpd=F)
+
+  use <- c('dis','hpe')
+  par(new = "TRUE",plt = plotlocs[[2]],las = 1,cex.axis = 1)
+  plot(x=1,y=1,type='n',xaxs = "i",yaxs = "i",xlab='',ylab='',xaxt='n',yaxt='n',xlim=xlim,ylim=yl2m)
+  for(u in use){
+   polygon(x=c(min(n_vec),n_vec,max(n_vec)), y=c(0,res[u,],0), border=NA, col=filref[u])
+  }
+  for(u in use){
+   lines(x=n_vec, y=res[u,],type='l',lty=2,col='black',lwd=0.8)
+  }
+  axis(side=1,labels=xaxt,at=xaxl,cex.axis=0.5,las=1,mgp=c(1.0, .1, 0))
+  axis(side=2,labels=ya2t,at=ya2l,cex.axis=0.5,las=3,mgp=c(3.0, .3, 0))
+  mtext(text="B",side=3,line=0.0,at=0.2*n_vec[1],cex=1.5)
+  mtext(text="hpe (gridsearch)", side=3, line=0.0,cex=1.2)
+  legend(x='top',legend=titref[use],pch=15,col=filref[use],cex=0.7,bg='white')
+  mtext(side=1,text='number of observations',line=1.3,las=1,cex=1.2)
+  #axis(side=4,at=c2n,cex.axis=0.5,tick = TRUE, labels = FALSE,col.ticks='grey60')
+
+  use <- 'hpb'
+  par(new = "TRUE",plt = plotlocs[[3]],las = 1,cex.axis = 1)
+  plot(x=1,y=1,type='n',xaxs = "i",yaxs = "i",xlab='',ylab='',xaxt='n',yaxt='n',xlim=xlim,ylim=yl2m)
+  for(u in use){
+   polygon(x=c(min(n_vec),n_vec,max(n_vec)), y=c(0,res[u,],0), border=NA, col=filref[u])
+  }
+  for(u in use){
+   lines(x=n_vec, y=res[u,],type='l',lty=2,col='black',lwd=0.8)
+  }
+  axis(side=1,labels=xaxt,at=xaxl,cex.axis=0.5,las=1,mgp=c(1.0, .1, 0))
+  mtext(text="C",side=3,line=0.0,at=0.2*n_vec[1],cex=1.5)
+  mtext(text="hpb (bootstrap)", side=3, line=0.0,cex=1.2)
+  legend(x='top',legend=titref[use],pch=15,col=filref[use],cex=0.7,bg='white')
+  mtext(side=1,text='number of observations',line=1.3,las=1,cex=1.2)
 
 dev.off()
 

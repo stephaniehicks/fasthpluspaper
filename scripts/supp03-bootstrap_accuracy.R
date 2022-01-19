@@ -52,7 +52,7 @@ dat <- lapply(setups, function(x) {
   col <- sapply(lab, function(j) colref[j])
   pc <- prcomp(z)$x[,1:2]
   dis <- dist(z)
-  hp <- hpe(D=dis,L=lab,p=10001)$h
+  hp <- hpe(D=dis,L=lab,p=10001,alphas=F,gammas=F)
   hpb <- sapply(t_vec, function(t) {
     sapply(r_vec, function(r) {
       hpb(D=z,L=lab,r=r,t=t)
@@ -64,8 +64,8 @@ dat <- lapply(setups, function(x) {
 })
 
 
-nr <- length(r_vec)
-nc <- length(q_vec)
+nc <- length(r_vec)
+nr <- length(t_vec)
 gres <- dat[[1]]$res
 hres <- dat[[2]]$res
 
@@ -94,8 +94,8 @@ ylim <-c(-0.5,nr+0.4)
 zleglocs <- c(0.01,0.50,0.99)
 zleglabs <- formatC(seq(zlim[1],zlim[2],length.out=3),format='f',digits=2)
 txtcut <- 0.05
-xlabs <- as.character(q_vec)
-ylabs <- as.character(r_vec)
+xlabs <- as.character(r_vec)
+ylabs <- as.character(t_vec)
 yvals <- sapply(1:nr, function(i) c(i-0.5,i+0.5))
 
 pdf("supp03-bootstrap_accuracy.pdf",width=8,height=10)
