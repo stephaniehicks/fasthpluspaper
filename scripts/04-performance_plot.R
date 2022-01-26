@@ -33,7 +33,7 @@ res <- sapply(n_vec, function(n) {
   dis <- as.matrix(dis)
   dis <- dis[upper.tri(dis)]
   t_di2 <- unname(proc.time() - ptm)[3]
-  t_dis <- t_dis + t_di2 
+  t_dis <- t_dis + t_di2
   #time s+ calculation
   if(n < 1000){
   ptm <- proc.time()
@@ -121,7 +121,7 @@ pdf("04-performance_plot.pdf",width=8,height=3)
   axis(side=2,labels=yaxt,at=yaxl,cex.axis=0.5,las=3,mgp=c(3.0, .3, 0))
   mtext(text="A",side=3,line=0.0,at=0.2*n_vec[1],cex=1.5)
   mtext(text="H+ (full)", side=3, line=0.0,cex=1.2)
-  legend(x='top',legend=titref[use],pch=15,col=filref[use],cex=0.7,bg='white') 
+  legend(x='top',legend=titref[use],pch=15,col=filref[use],cex=0.7,bg='white')
   #axis(side=4,at=con,cex.axis=0.5,tick = TRUE, labels = FALSE,cex.axis=0.5,las=3,mgp=c(3.0, .3, 0))
 
   #draw two lines to connect axes between 1st and 2nd/3rd plots
@@ -165,3 +165,7 @@ pdf("04-performance_plot.pdf",width=8,height=3)
 dev.off()
 
 
+#write output to csv
+colnames(res) <- n_vec
+write.csv(x=res,file="performance_tms.csv",quote=F)
+#04-performance_plot.pdf
