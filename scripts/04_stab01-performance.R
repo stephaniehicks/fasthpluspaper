@@ -166,6 +166,9 @@ dev.off()
 
 
 #write output to csv
-colnames(res) <- n_vec
-write.csv(x=res,file="performance_tms.csv",quote=F)
+res <- rbind(n_vec,res)
+rownames(res)[1] <- "obs"
+res[1,] <- as.integer(res[1,])
+#colnames(res) <- paste0("n_",n_vec)
+write.table(x=res,file="stab01-performance.csv",quote=F,col.names=FALSE,row.names=T,sep=',')
 #04-performance_plot.pdf
