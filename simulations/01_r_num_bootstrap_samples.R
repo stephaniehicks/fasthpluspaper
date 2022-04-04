@@ -1,4 +1,8 @@
-#load relevant packages
+
+# install.packages('devtools')
+# library(devtools)
+# install_github(repo="ntdyjack/fasthplus", ref = "main")#load relevant packages
+library(fasthplus)
 library(here)
 #code for simulating data 
 #https://github.com/stephaniehicks/benchmark-hdf5-clustering/blob/2020-05-07-freeze/scripts/simulate_gauss_mix_k.R
@@ -44,7 +48,7 @@ simulate_gauss_mix_k <- function(n_cells, n_genes,
 }
 
 
-simulate_gauss_mix_k(n_cells = 1000, n_genes = 10, 
+data <- simulate_gauss_mix_k(n_cells = 1000, n_genes = 10, 
                      k = 3, x_mus = c(1 ,2, 3) , y_mus = c(1,2,3), 
                      x_sds = c(1,1,1), y_sds = c(1,1,1), prop1 = c(0.3, 0.4, 0.3))
 
@@ -58,4 +62,13 @@ simulate_gauss_mix_k(n_cells = 1000, n_genes = 10,
 
 
 #Explore what happens when you apply hpb()  varying the number of bootstrap samples (`r).
+ptm <- proc.time()
+fasthplus::hpb(D = data$obs_data, L= data$true_cluster_id, t=10,r=10)
+#D = truedata or obsdata? 
+proc.time() - ptm
+
+# user  system elapsed 
+# 0.003   0.002   0.006 
+
+
 
