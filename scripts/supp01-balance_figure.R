@@ -14,7 +14,10 @@ pdf(here("figures", "supp01-balance_figure.pdf"), width = 10,height=8)
   ind <- ind[upper.tri(ind)]
   iw <- which(ind)
   alpha <- formatC(round(length(iw) / (length(ind)),digits=2),digits=2,format='f')
-  mtext(text= bquote( '2 balanced classes (' ~ alpha == .(alpha) ~ ')'),cex=1.1)
+  #bvals <- sapply(bals, 1:length(bals), function(x) paste0(
+  #mtext(text= bquote( '2 balanced classes (' ~ alpha == .(alpha) ~ ')'),cex=1.1)
+  mtext(bquote('k=2,'~alpha*'='*.(alpha)),cex=0.9,line=1.0)
+  mtext(bquote(b[1]*'=0.5,'*b[2]*'=0.5'),cex=0.7,line=0.0)
   abline(a=1,b=-1,lty=3,lwd=2,col='black')
   mtext(side=3,text='A',at=0,cex=1.3)
 
@@ -26,7 +29,9 @@ pdf(here("figures", "supp01-balance_figure.pdf"), width = 10,height=8)
   ind <- ind[upper.tri(ind)]
   iw <- which(ind)
   alpha <- formatC(round(length(iw) / (length(ind)),digits=2),digits=2,format='f')
-  mtext(text= bquote( '2 imbalanced classes (' ~ alpha == .(alpha) ~ ')'),cex=1.1)
+  #mtext(text= bquote( '2 imbalanced classes (' ~ alpha == .(alpha) ~ ')'),cex=1.1)
+  mtext(bquote('k=2,'~alpha*'='*.(alpha)),cex=0.9,line=1.0)
+  mtext(bquote(b[1]*'=0.9,'*b[2]*'=0.1'),cex=0.7,line=0.0)
   abline(a=1,b=-1,lty=3,lwd=2,col='black')
   mtext(side=3,text='B',at=0,cex=1.3)
 
@@ -38,7 +43,9 @@ pdf(here("figures", "supp01-balance_figure.pdf"), width = 10,height=8)
   ind <- ind[upper.tri(ind)]
   iw <- which(ind)
   alpha <- formatC(round(length(iw) / (length(ind)),digits=2),digits=2,format='f')
-  mtext(text= bquote( '10 balanced classes (' ~ alpha == .(alpha) ~ ')'),cex=1.1)
+  #mtext(text= bquote( '10 balanced classes (' ~ alpha == .(alpha) ~ ')'),cex=1.1)
+  mtext(bquote('k=10,'~alpha*'='*.(alpha)),cex=0.9,line=1.0)
+  mtext(bquote(b[1]*'='*b[2]*'=...='*b[10]*'=0.1'),cex=0.7,line=0.0)
   abline(a=1,b=-1,lty=3,lwd=2,col='black')
   mtext(side=3,text='C',at=0,cex=1.3)
 
@@ -52,7 +59,10 @@ pdf(here("figures", "supp01-balance_figure.pdf"), width = 10,height=8)
   ind <- ind[upper.tri(ind)]
   iw <- which(ind)
   alpha <- formatC(round(length(iw) / (length(ind)),digits=2),digits=2,format='f')
-  mtext(text= bquote( '10 imbalanced classes (' ~ alpha == .(alpha) ~ ')'))
+  #mtext(text= bquote( '10 imbalanced classes (' ~ alpha == .(alpha) ~ ')')
+  mtext(bquote('k=10,'~alpha*'='*.(alpha)),cex=0.9,line=1.0)
+  balstxt <- formatC(bals,digits=2,format='f')
+  mtext(bquote(b[1]*'='*.(balstxt[1])*','*b[2]*'='*.(balstxt[2])*','*b[3]*'='*.(balstxt[3])*','*b[4]*'='*.(balstxt[4])*','*b[5]*'='*.(balstxt[5])*','*b[6]*'='*.(balstxt[6])*','*b[7]*'='*.(balstxt[7])*','*b[8]*'='*.(balstxt[8])*','*b[9]*'='*.(balstxt[9])*','*b[10]*'='*.(balstxt[10])),cex=0.7,line=0.0)
   abline(a=1,b=-1,lty=3,lwd=2,col='black')
   mtext(side=3,text='D',at=0,cex=1.3)
 

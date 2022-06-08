@@ -98,7 +98,7 @@ xlabs <- as.character(r_vec)
 ylabs <- as.character(t_vec)
 yvals <- sapply(1:nr, function(i) c(i-0.5,i+0.5))
 
-pdf("supp03-bootstrap_accuracy.pdf",width=8,height=10)
+pdf(here("figures", "supp03-bootstrap_accuracy.pdf"),width=8,height=10)
   plot.new()
   par(new = "TRUE",plt = plotlocs[1,],las = 1, cex.axis = 1)
   #plot.new()

@@ -4,7 +4,8 @@ clw <- '#0000ff64' #blue (transparent)
 clb <- '#ff000064' #red (transparent)
 
 library(pbapply)
-
+library(here)
+library(fasthplus)
 
 set.seed(1234)
 n <- 1000
@@ -88,10 +89,13 @@ bins <- seq(binmin,binmax,length.out=20)
 
 #g+ and h+ values
 perfs <- pbsapply(dat, function(d) {
-  sp <- sum(sapply(d$w, function(x) sum(x>d$b)))
+  #sp <- sum(sapply(d$w, function(x) sum(x>d$b)))
   #gp <- (2*sp) / Nz
-  gp <- sp / Nz
-  hp <- sp / (as.numeric(length(d$w))*as.numeric(length(d$b)))
+  #gp <- sp / Nz
+  #hp <- sp / (as.numeric(length(d$w))*as.numeric(length(d$b)))
+  hp_est <- hpe(A=d$w,B=d$b,p=10001,alg="grid_search",alpha=T,gammas=F)
+  hp <- hp_est$h
+  gp <- 2 * (hp_est$alpha) * (1 - hp_est$alpha) * hp
   c(g=gp,h=hp)
 })
 
@@ -119,6 +123,14 @@ c6r <- 0.84
 c7l <- 0.86
 c7r <- 0.99
 
+baltxts <- list(
+  list(bquote(b[1]*'=0.5'),bquote(b[2]*'=0.5')),
+  list(bquote(b[1]*'=0.9'),bquote(b[2]*'=0.1')),
+  list(bquote(b[1]*'=0.5'),bquote(b[2]*'=0.5')),
+  list(bquote(b[1]*'=0.9'),bquote(b[2]*'=0.1')),
+  list(bquote(b[1]*'=0.5'),bquote(b[2]*'=0.5')),
+  list(bquote(b[1]*'=0.9'),bquote(b[2]*'=0.1'))
+)
 
 plotlocs <- rbind(
   c(c2l,c2r,r1b,r1t), #row1 col2
@@ -153,7 +165,8 @@ ylims_hist <- c(0,103500)
 
 alphloc <- c(37,8e4)
 
-pdf("01-motivating_figure.pdf",width=10,height=5)
+pdf(here("figures", "01-motivating_figure.pdf"), width = 10,height=5)
+#pdf("01-motivating_figure.pdf",width=10,height=5)
   plot.new()
 
   #1st row (PCA plots)
@@ -179,13 +192,21 @@ pdf("01-motivating_figure.pdf",width=10,height=5)
     par(new = "TRUE",plt = plotlocs[l+i,],las = 1,cex.axis = 1)
     hist(x=dat[[i]]$w,breaks=bins,main='',xlab='',ylab='',plot=T,border='blue',col=clw, freq=T,xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',ylim=ylims_hist)
     hist(x=dat[[i]]$b,breaks=bins,add=T,border='red',col=clb,freq=T,ylim=ylims_hist)
-    if(i==1){mtext(side=2,text='Frequency',line=1.5,las=3)}
+#    if(i==1){mtext(side=2,text='Frequency',line=1.5,las=3)}
     mtext(side=1,text='Dist. (L2)',line=1.0,las=1)
     #mtext(text=letters[l+i],side=3,at=bins[1],cex=1.5,line=0.5)
     axis(side=1,at=xticks_hist,las=1,mgp=c(3, .2, 0),line=0.1,cex.axis=0.8)
-    if(i==1){axis(side=2,at=yticks_hist,labels=ytclbs_hist,las=2,mgp=c(3, .5, 0),cex.axis=0.8)}
+    if(i==1){
+      mtext(side=2,text='Frequency',line=1.5,las=3)
+      axis(side=2,at=yticks_hist,labels=ytclbs_hist,las=2,mgp=c(3, .5, 0),cex.axis=0.8)
+      arrows(x0=bins[5],y0=85000,x1=bins[6],y1=65000,code=2,lwd=1,col='red',angle=15,length=0.10)
+      arrows(x0=bins[10],y0=85000,x1=bins[9],y1=65000,code=2,lwd=1,col='blue',angle=15,length=0.10)
+      text(x=bins[8],y=9e4, labels=expression('D'[B] %~~% 'D'[W]),cex=0.8)
+    }
     alphtxt <- formatC(dat[[i]]$a,digits=2,format='f')
-    text(x=alphloc[1],y=alphloc[2], labels=bquote(alpha == .(alphtxt)),cex=0.8)
+    text(x=alphloc[1],y=alphloc[2], labels=bquote(alpha*'='*.(alphtxt)),cex=0.8)
+    text(x=alphloc[1],y=7e4, labels=baltxts[[i]][[1]],cex=0.8)
+    text(x=alphloc[1],y=6e4, labels=baltxts[[i]][[2]],cex=0.8)    
   }
 
   #3rd row (h+ and g+ values)

@@ -2,7 +2,8 @@
 #https://github.com/LuyiTian/sc_mixology/tree/master/data/csv/sc_10x.count.csv.gz
 #https://github.com/LuyiTian/sc_mixology/blob/master/data/csv/sc_10x.metadata.csv.gz
 #data comes from here, store locally somewhere and then change variable below
-datdir <- "C:\\Users\\Nathan\\Downloads\\" #change this to yours
+#datdir <- "C:\\Users\\Nathan\\Downloads\\" #change this to yours
+datdir <- "/Users/daviddyjack/Downloads/"
 dsn <- read.csv(gzfile(paste0(datdir,'sc_10x.metadata.csv.gz')),header=T)
 l <- as.numeric(as.factor(dsn$cell_line))
 dat <- read.csv(gzfile(paste0(datdir,'sc_10x.count.csv.gz')),header=T)
@@ -11,6 +12,7 @@ library(scran)
 library(fasthplus)
 library(cluster)
 library(purrr)
+library(here)
 sce <- SingleCellExperiment(assays=list(logcounts=log2(dat+1)))
 fit <- modelGeneVar(sce)
 hvg <- getTopHVGs(fit, n=1000)
@@ -35,7 +37,7 @@ hc_cols <- lapply(labs, function(x) sapply(x, function(y) colref[y]))
 hc_fils <- lapply(labs, function(x) sapply(x, function(y) filref[y]))
 
 #hvals <- sapply(labs, function(l) hpe(D=dl2,L=l,alphas=T,p=101)$h)
-hs <- sapply(labs, function(l) hpe(D=dl2,L=l,alphas=T,p=101)$h)
+hs <- sapply(labs, function(l) hpe(D=dl2,L=l,alpha=T,p=1001)$h)
 as <- sapply(labs, function(y) adjustedRandIndex(l,y)) 
 
 map_fxn <- function(x,out_min,out_max,in_min,in_max){
@@ -58,7 +60,7 @@ calc_wss <- function(d,l){
 k_vec <- 2:10
 stats_k <- sapply(k_vec, function(k) {
   p <- pam(x=dl2,k,diss=T)
-  h <- 1 - hpe(D=dl2,L=p$clustering,alphas=F,p=101)$h
+  h <- 1 - hpe(D=dl2,L=p$clustering,alpha=T,p=1001)$h
   s <- p$silinfo$avg.width
   #mean(silhouette(x=p$clustering,dist=dl2)[,3])
   w <- calc_wss(dl2,p$clustering)
@@ -66,14 +68,14 @@ stats_k <- sapply(k_vec, function(k) {
   c(h,s,o,w)
 })
 
-l_bg <- mean(log(ws_bg)) #apply(ws_bg,1,function(x) mean(log(x)))
+#l_bg <- mean(log(ws_bg)) #apply(ws_bg,1,function(x) mean(log(x)))
 
 stats_plot <- t(apply(stats_k,1, function(x) map_fxn(x,0,1,min(x),max(x))))
 
 col_hc <- c("#785EF0","#DC267F","#FE6100","#FFB000")
 
 cols_s <- c("#332288","#44AA99","#AA4499")
-ltys_s <- c(1,2,3)
+ltys_s <- c(3,2,1)
 
 xlim_s <- c(1.9,10.1)
 xticks_s <- k_vec
@@ -99,7 +101,8 @@ plotlocs <- list(
   c(0.06,0.96,0.06,0.46)  # 3:4,1:4
 )
 
-pdf('05-application_plot.pdf',width=8,height=8)
+pdf(here("figures", "05-application_plot.pdf"), width = 8,height=8)
+#pdf('05-application_plot.pdf',width=8,height=8)
   plot.new()
 
   par(new = "TRUE",plt = plotlocs[[1]],las = 1,cex.axis = 1)
@@ -149,28 +152,33 @@ pdf('05-application_plot.pdf',width=8,height=8)
   mtext(side=1,text="k (number clusters)",cex=1.1,line=1.1,las=1)
   mtext(side=2,text="Scaled Performance",line=0.3,las=3)
   axis(side=1,labels=xticks_s,at=xticks_s,cex=1.0,las=1,mgp=c(3, .5, 0))
-  for(i in 1:2){
+  for(i in 1:3){
     points(x=k_vec,y=stats_plot[i,],type='b',pch=16,col=cols_s[i],lty=ltys_s[i],lwd=1.5,cex=1.5)
   }
-  legend('right',bty='n',legend=c("1-H+","Mean Sil."), pt.cex=1.5, pch=16, pt.lwd=1.5,cex = 1, col=cols_s,lty=ltys_s,lwd=1.5)
+  legend('right',bty='n',legend=c("1-H+","Mean Sil.", "WSS"), pt.cex=1.5, pch=16, pt.lwd=1.5,cex = 1, col=cols_s,lty=ltys_s,lwd=1.5)
   mtext(side=3,line=0.0,text='H+ as an internal fitness measure')
   mtext(side=3,text='F',line=0.0,at=1.9,cex=1.3)
-
+  rect(xleft=2.8,xright=3.2,ybottom=stats_plot[3,2]-0.05, ytop=stats_plot[3,2]+0.05,border='red',lty=1,lwd=1.5,xpd=T,col=NA)
+  arrows(x0=3.0,y0=stats_plot[3,2]-0.06,x1=3.0,y1=stats_plot[3,2]-0.15,code=1,lwd=1,col='black',angle=15,length=0.1)
+  text(x=3.0,y=stats_plot[3,2]-0.17,labels='bend',cex=1.0)
+  rect(xleft=2.8,xright=3.2,ybottom=stats_plot[2,2]-0.05, ytop=stats_plot[2,2]+0.05,border='red',lty=1,lwd=1.5,xpd=T,col=NA)
+  arrows(x0=3.25,y0=stats_plot[2,2],x1=3.60,y1=stats_plot[2,2],code=1,lwd=1,col='black',angle=15,length=0.1)
+  text(x=3.85,y=stats_plot[2,2],labels='peak',cex=1.0)
 dev.off()
 
-ylim_s <- c(340000,571000)
-yticks_s <- c(350000,450000,550000)
-ylabs_s <- sub("\\+0","",formatC(yticks_s,digits=1,format='E'))
+#ylim_s <- c(340000,571000)
+#yticks_s <- c(350000,450000,550000)
+#ylabs_s <- sub("\\+0","",formatC(yticks_s,digits=1,format='E'))
 #c('350000','450000','550000')
 
-pdf('supp02-wss_plot.pdf',width=6,height=4)
-  plot.new()
-  par(new = "TRUE",plt = c(0.15,0.97,0.15,0.97),las = 1,cex.axis = 1)
-  plot(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=2,lwd=2.0,cex=1.3,
-    main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',xlim=xlim_s,ylim=ylim_s)
-  axis(side=2,labels=ylabs_s,at=yticks_s,cex=1.0,las=2,mgp=c(3, .5, 0))
-  mtext(side=1,text="k (number clusters)",cex=1.1,line=1.2,las=1)
-  mtext(side=2,text="WSS (Within-cluster sum of squares)",line=3.0,las=3)
-  axis(side=1,labels=xticks_s,at=xticks_s,cex=1.0,las=1,mgp=c(3, .5, 0))
+#pdf('supp02-wss_plot.pdf',width=6,height=4)
+#  plot.new()
+#  par(new = "TRUE",plt = c(0.15,0.97,0.15,0.97),las = 1,cex.axis = 1)
+#  plot(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=2,lwd=2.0,cex=1.3,
+#    main='',xlab='',ylab='',xaxs = "i",yaxs = "i",xaxt='n',yaxt='n',xlim=xlim_s,ylim=ylim_s)
+#  axis(side=2,labels=ylabs_s,at=yticks_s,cex=1.0,las=2,mgp=c(3, .5, 0))
+#  mtext(side=1,text="k (number clusters)",cex=1.1,line=1.2,las=1)
+#  mtext(side=2,text="WSS (Within-cluster sum of squares)",line=3.0,las=3)
+#  axis(side=1,labels=xticks_s,at=xticks_s,cex=1.0,las=1,mgp=c(3, .5, 0))
 #  points(x=k_vec,y=stats_k[4,],type='b',pch=16,col=cols_s[3],lty=ltys_s[3],lwd=1.5,cex=1.5)
-dev.off()
+#dev.off()

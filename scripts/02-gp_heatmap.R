@@ -3,6 +3,7 @@ library(doParallel)
 library(RColorBrewer)
 library(viridis)
 library(leaflet)
+library(here)
 
 set.seed(1234)
 #set up parallel backend
@@ -81,7 +82,8 @@ xlabs <- sapply(bals, function(x) {
 yvals <- sapply(1:nr, function(i) c(i-0.5,i+0.5))
 ylabs <- formatC(seq(0.00,0.5,by=0.05)*2,digits=1,format='f')
 
-pdf("02-signal_heatmap.pdf",width=10,height=8)
+pdf(here("figures", "02-signal_heatmap.pdf"), width = 10,height=8)
+#pdf("02-signal_heatmap.pdf",width=10,height=8)
   plot.new()
   par(new = "TRUE",plt = plotlocs[1,],las = 1, cex.axis = 1)
   plot.new()
@@ -101,7 +103,7 @@ pdf("02-signal_heatmap.pdf",width=10,height=8)
   text(x=-1.0,y=mean(yvals),labels= expression("theoretical mean difference (" * Delta * ")"),srt=90,cex=1.3)
   #expression("Mean cluster difference: E[Cl"[1] * "] - E[Cl"[2] * "]"),srt=90,cex=1.5)
   #text(x=11,y=-0.6,labels=expression("Cl"[1] * ":Cl"[2]),cex=1.5)
-  text(x=11,y=-0.5,labels='class balance (b:1-b)',cex=1.3) #expression(" Cl"[1] * ":Cl"[2]),cex=1.5)
+  text(x=11,y=-0.5,labels='group balance (b:1-b)',cex=1.3) #expression(" Cl"[1] * ":Cl"[2]),cex=1.5)
   par(xpd=FALSE)
 
   par(new = "TRUE",plt = plotlocs[2,],las = 1, cex.axis = 1)

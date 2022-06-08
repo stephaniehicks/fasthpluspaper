@@ -2,6 +2,7 @@
 set.seed(1234)
 library(RColorBrewer)
 library(fasthplus)
+library(here)
 
 set.seed(1234)
 n_vec <- c(100,500,1000,3000)#seq(1000,5000,by=1000))
@@ -96,7 +97,7 @@ plotlocs <- list(
 #make sure the max is right for 2nd/3rd plots
 #add tickmark to the right side of first plot to connect re-scaling
 
-pdf("04-performance_plot.pdf",width=8,height=3)
+pdf(here("figures", "04-performance_plot.pdf"),width=8,height=3)
   plot.new()
 
   use <- c('sum','dis','adj')
@@ -170,5 +171,5 @@ res <- rbind(n_vec,res)
 rownames(res)[1] <- "obs"
 res[1,] <- as.integer(res[1,])
 #colnames(res) <- paste0("n_",n_vec)
-write.table(x=res,file="stab01-performance.csv",quote=F,col.names=FALSE,row.names=T,sep=',')
+write.table(x=res,file=here("figures","stab01-performance.csv"),quote=F,col.names=FALSE,row.names=T,sep=',')
 #04-performance_plot.pdf
