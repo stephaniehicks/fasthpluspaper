@@ -155,7 +155,7 @@ pdf(here("figures", "05-application_plot.pdf"), width = 8,height=8)
   for(i in 1:3){
     points(x=k_vec,y=stats_plot[i,],type='b',pch=16,col=cols_s[i],lty=ltys_s[i],lwd=1.5,cex=1.5)
   }
-  legend('right',bty='n',legend=c("1-H+","Mean Sil.", "WSS"), pt.cex=1.5, pch=16, pt.lwd=1.5,cex = 1, col=cols_s,lty=ltys_s,lwd=1.5)
+  legend('right',bty='n',legend=c("1-H+","Mean Sil.", "WCSS"), pt.cex=1.5, pch=16, pt.lwd=1.5,cex = 1, col=cols_s,lty=ltys_s,lwd=1.5)
   mtext(side=3,line=0.0,text='H+ as an internal fitness measure')
   mtext(side=3,text='F',line=0.0,at=1.9,cex=1.3)
   rect(xleft=2.8,xright=3.2,ybottom=stats_plot[3,2]-0.05, ytop=stats_plot[3,2]+0.05,border='red',lty=1,lwd=1.5,xpd=T,col=NA)
