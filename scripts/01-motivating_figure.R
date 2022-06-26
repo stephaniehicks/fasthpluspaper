@@ -89,13 +89,13 @@ bins <- seq(binmin,binmax,length.out=20)
 
 #g+ and h+ values
 perfs <- pbsapply(dat, function(d) {
-  #sp <- sum(sapply(d$w, function(x) sum(x>d$b)))
-  #gp <- (2*sp) / Nz
-  #gp <- sp / Nz
-  #hp <- sp / (as.numeric(length(d$w))*as.numeric(length(d$b)))
-  hp_est <- hpe(A=d$w,B=d$b,p=10001,alg="grid_search",alpha=T,gammas=F)
-  hp <- hp_est$h
-  gp <- 2 * (hp_est$alpha) * (1 - hp_est$alpha) * hp
+  sp <- sum(sapply(d$w, function(x) sum(x>d$b)))
+  gp <- (2*sp) / Nz
+  gp <- sp / Nz
+  hp <- sp / (as.numeric(length(d$w))*as.numeric(length(d$b)))
+  #hp_est <- hpe(A=d$w,B=d$b,p=10001,alg="grid_search",alpha=T,gammas=F)
+  #hp <- hp_est$h
+  #gp <- 2 * (hp_est$alpha) * (1 - hp_est$alpha) * hp
   c(g=gp,h=hp)
 })
 
@@ -166,7 +166,6 @@ ylims_hist <- c(0,103500)
 alphloc <- c(37,8e4)
 
 pdf(here("figures", "01-motivating_figure.pdf"), width = 10,height=5)
-#pdf("01-motivating_figure.pdf",width=10,height=5)
   plot.new()
 
   #1st row (PCA plots)
